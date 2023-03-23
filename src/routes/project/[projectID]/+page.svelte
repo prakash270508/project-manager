@@ -12,25 +12,7 @@
     project = lists.find((item) => item.id === projectId);
   });
 
-  const handleDetails = () => {
-    project.moreDetails = moreDetails;
-
-    // Update the projects store to save the updated data in the localStorage
-    projects.update((prevalue) => {
-      const updatedProjects = prevalue.map((item) => {
-        if (item.id === projectId) {
-          return { ...item, moreDetails };
-        } else {
-          return item;
-        }
-      });
-      localStorage.setItem("projects", JSON.stringify(updatedProjects));
-      return updatedProjects;
-    });
-
-    moreDetails = "";
-    clicked = false;
-  };
+  console.log(project);
 </script>
 
 {#if project}
@@ -44,47 +26,37 @@
     <br />
 
     {#if !project.detailsAdded}
-      {#if clicked}
-        <div>
-          <div class="d-flex">
-            <h6 style="color: #62ffff;"><b>Project Budget : </b></h6>
-            <h6 class="mx-2"><i>2,00,000</i></h6>
-          </div>
-          <div class="d-flex my-1">
-            <h6 style="color: #62ffff;"><b>Project Owner : </b></h6>
-            <h6 class="mx-2"><i> Prakash Pandey</i></h6>
-          </div>
-          <div class="text-center">
-            <h4 style="color: #62ffff;"><b>Project Members</b></h4>
-          </div>
-          <div class="d-flex text-center my-4 justify-content-center">
+      <a href={`/add-details/${projectId}`}>
+        <button class="btn addBtn w-100" on:click={() => (clicked = true)}
+          ><b>Add More details</b></button
+        >
+      </a>
+    {:else if project.moreDetails}
+      <div>
+        <div class="d-flex">
+          <h6 style="color: #62ffff;"><b>Project Budget : </b></h6>
+          <h6 class="mx-2"><i>{project.moreDetails.budget}</i></h6>
+        </div>
+        <div class="d-flex my-1">
+          <h6 style="color: #62ffff;"><b>Project Owner : </b></h6>
+          <h6 class="mx-2">
+            <i>{project.moreDetails.owner ? project.moreDetails.owner : ""}</i>
+          </h6>
+        </div>
+        <div class="text-center">
+          <h4 style="color: #62ffff;"><b>Project Members</b></h4>
+        </div>
+        <div class="d-flex text-center my-4 justify-content-center">
+          {#each project.moreDetails.membersArray as members (members.id)}
             <div class="col-3">
-              <div class="card my-2 bg-dark">
-                <b>Aggigned Work</b>
-                <button class="btn deleteBtn"><b>Hansraj</b></button>
+              <div class="card my-2 mx-3 bg-dark">
+                <h5><b>{members.projMember}</b></h5>
+                <div><i>{members.work}</i></div>
               </div>
             </div>
-            <div class="col-3">
-              <button class="btn deleteBtn"><i>Hansraj</i></button>
-            </div>
-            <div class="col-3">
-              <button class="btn deleteBtn"><i>Hansraj</i></button>
-            </div>
-            <div class="col-3">
-              <button class="btn deleteBtn"><i>Hansraj</i></button>
-            </div>
-          </div>
+          {/each}
         </div>
-        <button class="btn addBtn w-100" on:click={() => (clicked = false)}
-          ><b>close More details</b></button
-        >
-      {:else}
-        <a href={`/add-details/${projectId}`}>
-          <button class="btn addBtn w-100" on:click={() => (clicked = true)}
-            ><b>Add More details</b></button
-          >
-        </a>
-      {/if}
+      </div>
     {/if}
   </div>
 {/if}
@@ -96,17 +68,6 @@
   }
   .addBtn {
     background-color: #62ffff;
-    color: black;
-  }
-  .deleteBtn {
-    background-color: transparent;
-    border: 0.2px solid #62ffff;
-    color: #62ffff;
-  }
-
-  .deleteBtn:hover {
-    background-color: #62ffff;
-    border: 0.2px solid black;
     color: black;
   }
 </style>
